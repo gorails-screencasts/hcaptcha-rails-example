@@ -24,7 +24,7 @@ class PostsController < ApplicationController
     @post = Post.new(post_params)
 
     respond_to do |format|
-      if @post.save
+      if @post.save_with_hcaptcha(response: params["h-captcha-response"], remote_ip: request.remote_ip)
         format.html { redirect_to post_url(@post), notice: "Post was successfully created." }
         format.json { render :show, status: :created, location: @post }
       else
@@ -36,8 +36,9 @@ class PostsController < ApplicationController
 
   # PATCH/PUT /posts/1 or /posts/1.json
   def update
+    @post.assign_attributes(post_params)
     respond_to do |format|
-      if @post.update(post_params)
+      if @post.save_with_hcaptcha(response: params["h-captcha-response"], remote_ip: request.remote_ip)
         format.html { redirect_to post_url(@post), notice: "Post was successfully updated." }
         format.json { render :show, status: :ok, location: @post }
       else
